@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+// import { Inter } from '@next/font/google';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -55,25 +56,25 @@ export default function RegisterForm() {
   };
 
   // تابع تست اتصال به دیتابیس
-  const testDatabaseConnection = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/test-db');
-      const data = await response.json();
+  // const testDatabaseConnection = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch('/api/test-db');
+  //     const data = await response.json();
       
-      if (response.ok) {
-        alert('✅ اتصال به دیتابیس موفقیت‌آمیز بود!');
-        console.log('اطلاعات دیتابیس:', data);
-      } else {
-        alert('❌ خطا در اتصال به دیتابیس: ' + data.error);
-      }
-    } catch (error) {
-      alert('❌ خطا در تست اتصال به دیتابیس');
-      console.error('خطا:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response.ok) {
+  //       alert('✅ اتصال به دیتابیس موفقیت‌آمیز بود!');
+  //       console.log('اطلاعات دیتابیس:', data);
+  //     } else {
+  //       alert('❌ خطا در اتصال به دیتابیس: ' + data.error);
+  //     }
+  //   } catch (error) {
+  //     alert('❌ خطا در تست اتصال به دیتابیس');
+  //     console.error('خطا:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="register-container">
@@ -92,14 +93,14 @@ export default function RegisterForm() {
         ← بازگشت به خانه
       </button>
 
-      {/* دکمه تست دیتابیس */}
+      {/* دکمه تست دیتابیس
       <button 
         onClick={testDatabaseConnection}
         className="back-button glass-card"
         style={{ top: '100px' }}
       >
         🗄️ تست اتصال دیتابیس
-      </button>
+      </button> */}
 
       {/* کارت ثبت نام */}
       <div className="register-card glass-card">

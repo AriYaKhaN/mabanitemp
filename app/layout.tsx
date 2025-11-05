@@ -8,8 +8,8 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: 'سایت ما - ثبت نام',
-  description: 'سیستم ثبت نام پیشرفته',
+  title: 'مبانی کامپیوتر - دکتر ساعدی',
+  description: 'سیستم مدیریت دانشجو',
 };
 
 export default function RootLayout({

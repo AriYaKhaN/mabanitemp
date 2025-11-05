@@ -29,16 +29,13 @@ export default function HomePage() {
 
         {/* دکمه‌های اقدام */}
         <div className="cta-buttons">
-          <Link href="/register" className="cta-primary glass-button">
+          <Link href="/ta_register" className="cta-primary glass-button">
             🎯 شروع کنید
           </Link>
           <Link href="/login" className="cta-secondary glass-card">
             ورود به حساب
           </Link>
         </div>
-        <Link href="/admin/database" className="cta-secondary glass-card mt-4">
-          ⚙️ تنظیمات دیتابیس
-        </Link>
         {/* ویژگی‌ها */}
         <div className="features-grid">
           {[

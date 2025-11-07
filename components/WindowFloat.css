@@ -1,0 +1,372 @@
+/* WindowFloat.css - استایل کامپوننت پنجره شناور مدرن */
+
+.window-float {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e5e9;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  transition: 
+    box-shadow 0.3s ease,
+    transform 0.2s ease,
+    border-color 0.3s ease;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.window-float:hover {
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  border-color: #d0d7de;
+}
+
+.window-float:active {
+  transform: scale(0.995);
+}
+
+.window-float.maximized {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.window-float.maximized:hover {
+  box-shadow: none;
+}
+
+/* هدر پنجره */
+.window-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: grab;
+  user-select: none;
+  font-weight: 600;
+  position: relative;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.window-header:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.window-header:active {
+  cursor: grabbing;
+}
+
+.window-title {
+  font-size: 15px;
+  flex-grow: 1;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.window-control {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.window-control:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.window-control:active {
+  transform: scale(0.95);
+}
+
+.window-control.minimize:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.window-control.maximize:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.window-control.close:hover {
+  background: #ff5f57;
+  transform: scale(1.1);
+}
+
+.window-control.close:active {
+  background: #e04e47;
+}
+
+/* محتوای پنجره */
+.window-content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+  background: #f8fafc;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.window-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.window-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.window-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.window-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* کنترل‌های تغییر اندازه */
+.resize-handle {
+  position: absolute;
+  background: transparent;
+  z-index: 20;
+  transition: background 0.2s ease;
+}
+
+.resize-handle.n {
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.resize-handle.e {
+  top: 8px;
+  right: 0;
+  bottom: 8px;
+  width: 6px;
+  cursor: e-resize;
+}
+
+.resize-handle.s {
+  bottom: 0;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.resize-handle.w {
+  top: 8px;
+  left: 0;
+  bottom: 8px;
+  width: 6px;
+  cursor: w-resize;
+}
+
+.resize-handle.ne {
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: ne-resize;
+}
+
+.resize-handle.nw {
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nw-resize;
+}
+
+.resize-handle.se {
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.resize-handle.sw {
+  bottom: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  cursor: sw-resize;
+}
+
+/* هاور افکت برای هندل‌های رسیز */
+.resize-handle:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.resize-handle.n:hover,
+.resize-handle.s:hover {
+  background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.4), transparent);
+}
+
+.resize-handle.e:hover,
+.resize-handle.w:hover {
+  background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.4), transparent);
+}
+
+/* انیمیشن‌ها */
+@keyframes windowAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.window-float {
+  animation: windowAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* حالت‌های مختلف پنجره */
+.window-float.minimized {
+  transform: scale(0.8);
+  opacity: 0.7;
+}
+
+.window-float.maximized .resize-handle {
+  display: none;
+}
+
+.window-float.maximized .window-header {
+  border-radius: 0;
+}
+
+/* حالت تاریک (اختیاری) */
+@media (prefers-color-scheme: dark) {
+  .window-float {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: #374151;
+    color: #f8fafc;
+  }
+
+  .window-content {
+    background: #1e293b;
+    color: #f8fafc;
+  }
+
+  .window-content::-webkit-scrollbar-track {
+    background: #334155;
+  }
+
+  .window-content::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .window-content::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+}
+
+/* رسپانسیو برای موبایل */
+@media (max-width: 768px) {
+  .window-float {
+    border-radius: 0;
+    left: 10px !important;
+    right: 10px !important;
+    top: 10px !important;
+    bottom: 10px !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .window-header {
+    padding: 16px 20px;
+  }
+
+  .window-control {
+    width: 36px;
+    height: 36px;
+  }
+
+  .window-content {
+    padding: 20px;
+  }
+
+  .resize-handle {
+    display: none; /* غیرفعال کردن رسیز در موبایل */
+  }
+}
+
+/* ایالت فوکوس برای دسترسی‌پذیری */
+.window-float:focus-within {
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.window-control:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* انیمیشن برای دکمه بستن */
+@keyframes closeShake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.window-control.close:hover {
+  animation: closeShake 0.4s ease;
+}
+
+/* حالت‌های خاص */
+.window-float.transparent {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+.window-float.glass {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.25) 0%, 
+    rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.window-float.dark {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+.window-float.dark .window-content {
+  background: #1e293b;
+  color: #f8fafc;
+}

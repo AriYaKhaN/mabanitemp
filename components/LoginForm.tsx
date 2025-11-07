@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
-  const router = useRouter();
+  const Router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -40,7 +40,7 @@ export default function LoginForm() {
       if (response.ok) {
         setError('');
         alert('✅ ورود با موفقیت انجام شد!');
-        router.push('/dashboard');
+        Router.push('/dashboard');
       } else {
         setError(data.error || 'خطایی در ورود رخ داده است');
       }
@@ -63,14 +63,15 @@ export default function LoginForm() {
 
       {/* دکمه بازگشت */}
       <button 
-        onClick={() => router.push('/')}
-        className="back-button glass-card"
+        onClick={() => Router.push('/')}
+        className="home-button"
+        title="بازگشت به خانه"
       >
-        ← بازگشت به خانه
+        🏠
       </button>
 
       {/* کارت ورود */}
-      <div className="login-card glass-card">
+      <div className="login-card">
         <div className="login-header">
           <div className="avatar-container">
             <div className="avatar">🔐</div>
@@ -91,13 +92,13 @@ export default function LoginForm() {
               onChange={handleChange}
               placeholder="آدرس ایمیل"
               required
-              className="glass-input form-input"
+              className="form-input"
               disabled={loading}
             />
           </div>
 
           {/* فیلد رمز عبور */}
-          <div className="form-group">
+          <div className="form-group password-group">
             <div className="form-icon">🔒</div>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -106,7 +107,7 @@ export default function LoginForm() {
               onChange={handleChange}
               placeholder="رمز عبور"
               required
-              className="glass-input form-input"
+              className="form-input password-input"
               disabled={loading}
             />
             <button
@@ -125,7 +126,7 @@ export default function LoginForm() {
               href="/forgot-password"
               onClick={(e) => {
                 e.preventDefault();
-                router.push('/forgot-password');
+                Router.push('/forgot-password');
               }}
             >
               رمز عبور را فراموش کرده‌اید؟
@@ -143,15 +144,18 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="glass-button submit-button"
+            className="submit-button"
           >
             {loading ? (
-              <span>
-                در حال ورود
+              <span className="button-content">
                 <span className="loading-spinner"></span>
+                در حال ورود...
               </span>
             ) : (
-              '🚀 ورود به حساب'
+              <span className="button-content">
+                <span className="button-icon">🚀</span>
+                ورود به حساب
+              </span>
             )}
           </button>
         </form>
@@ -164,7 +168,7 @@ export default function LoginForm() {
               className="register-link"
               onClick={(e) => {
                 e.preventDefault();
-                router.push('/register');
+                Router.push('/ta_register');
               }}
             >
               ثبت نام کنید
@@ -183,6 +187,7 @@ export default function LoginForm() {
           position: relative;
           overflow: hidden;
           padding: 20px;
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .floating-shapes {
@@ -191,6 +196,7 @@ export default function LoginForm() {
           height: 100%;
           top: 0;
           left: 0;
+          pointer-events: none;
         }
 
         .shape {
@@ -229,35 +235,43 @@ export default function LoginForm() {
           50% { transform: translateY(-20px) rotate(10deg); }
         }
 
-        .back-button {
-          position: absolute;
-          top: 30px;
-          left: 30px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+        .home-button {
+          position: fixed;
+          top: 25px;
+          right: 25px;
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           color: white;
-          padding: 12px 20px;
-          border-radius: 12px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
           backdrop-filter: blur(10px);
           cursor: pointer;
           transition: all 0.3s ease;
-          font-size: 14px;
+          font-size: 20px;
+          font-weight: 500;
+          z-index: 100;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .back-button:hover {
-          background: rgba(255, 255, 255, 0.2);
-          transform: translateX(-5px);
+        .home-button:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: scale(1.1);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .login-card {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           border-radius: 20px;
-          padding: 40px;
+          padding: 40px 35px;
           backdrop-filter: blur(20px);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
           width: 100%;
-          max-width: 400px;
+          max-width: 420px;
           animation: slideUp 0.5s ease-out;
         }
 
@@ -274,7 +288,7 @@ export default function LoginForm() {
 
         .login-header {
           text-align: center;
-          margin-bottom: 30px;
+          margin-bottom: 32px;
         }
 
         .avatar-container {
@@ -314,13 +328,15 @@ export default function LoginForm() {
         .login-title {
           color: white;
           font-size: 28px;
-          font-weight: bold;
+          font-weight: 700;
           margin-bottom: 8px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .login-subtitle {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 14px;
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 15px;
+          line-height: 1.5;
         }
 
         .form-group {
@@ -328,35 +344,46 @@ export default function LoginForm() {
           margin-bottom: 20px;
         }
 
+        .password-group {
+          position: relative;
+        }
+
         .form-icon {
           position: absolute;
-          left: 15px;
+          left: 16px;
           top: 50%;
           transform: translateY(-50%);
           font-size: 18px;
           z-index: 1;
+          pointer-events: none;
         }
 
         .form-input {
           width: 100%;
-          padding: 15px 15px 15px 50px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 16px 16px 16px 50px;
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           border-radius: 12px;
           color: white;
-          font-size: 14px;
+          font-size: 15px;
           backdrop-filter: blur(10px);
           transition: all 0.3s ease;
+          box-sizing: border-box;
+        }
+
+        .password-input {
+          padding-right: 50px;
         }
 
         .form-input::placeholder {
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.65);
         }
 
         .form-input:focus {
           outline: none;
-          border-color: rgba(255, 255, 255, 0.4);
-          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.18);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
 
         .form-input:disabled {
@@ -366,15 +393,28 @@ export default function LoginForm() {
 
         .password-toggle {
           position: absolute;
-          right: 15px;
+          right: 12px;
           top: 50%;
           transform: translateY(-50%);
-          background: none;
+          background: rgba(255, 255, 255, 0.1);
           border: none;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.8);
           cursor: pointer;
-          font-size: 16px;
-          padding: 5px;
+          font-size: 18px;
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+        }
+
+        .password-toggle:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          transform: translateY(-50%) scale(1.05);
         }
 
         .password-toggle:disabled {
@@ -388,10 +428,11 @@ export default function LoginForm() {
         }
 
         .forgot-password a {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.85);
           text-decoration: none;
           font-size: 14px;
           transition: color 0.3s ease;
+          font-weight: 500;
         }
 
         .forgot-password a:hover {
@@ -400,35 +441,41 @@ export default function LoginForm() {
         }
 
         .error-message {
-          background: rgba(255, 0, 0, 0.1);
-          border: 1px solid rgba(255, 0, 0, 0.3);
-          color: #ff6b6b;
-          padding: 12px;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #fecaca;
+          padding: 14px 16px;
           border-radius: 12px;
           margin-bottom: 20px;
           font-size: 14px;
           backdrop-filter: blur(10px);
+          line-height: 1.5;
         }
 
         .submit-button {
           width: 100%;
-          padding: 15px;
+          padding: 16px;
           background: rgba(255, 255, 255, 0.2);
           border: 1px solid rgba(255, 255, 255, 0.3);
           border-radius: 12px;
           color: white;
           font-size: 16px;
-          font-weight: bold;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           margin-bottom: 20px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .submit-button:hover:not(:disabled) {
           background: rgba(255, 255, 255, 0.3);
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-button:active:not(:disabled) {
+          transform: translateY(0);
         }
 
         .submit-button:disabled {
@@ -437,15 +484,25 @@ export default function LoginForm() {
           transform: none;
         }
 
+        .button-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .button-icon {
+          font-size: 18px;
+        }
+
         .loading-spinner {
           display: inline-block;
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
           border: 2px solid transparent;
           border-top: 2px solid white;
           border-radius: 50%;
           animation: spin 1s linear infinite;
-          margin-right: 8px;
         }
 
         @keyframes spin {
@@ -455,38 +512,59 @@ export default function LoginForm() {
 
         .login-footer {
           text-align: center;
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 14px;
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 15px;
+          margin-top: 10px;
         }
 
         .register-link {
           color: white;
           text-decoration: none;
-          font-weight: bold;
+          font-weight: 600;
           transition: all 0.3s ease;
         }
 
         .register-link:hover {
           text-decoration: underline;
-          color: #f0f0f0;
+          color: #f8fafc;
         }
 
-        .glass-card {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(20px);
-        }
-
-        .glass-input {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(10px);
-        }
-
-        .glass-button {
-          background: rgba(255, 255, 255, 0.2);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          backdrop-filter: blur(10px);
+        /* بهبود نمایش در دستگاه‌های موبایل */
+        @media (max-width: 480px) {
+          .login-container {
+            padding: 15px;
+          }
+          
+          .login-card {
+            padding: 30px 25px;
+          }
+          
+          .home-button {
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+          }
+          
+          .login-title {
+            font-size: 24px;
+          }
+          
+          .form-input {
+            padding: 14px 14px 14px 46px;
+            font-size: 14px;
+          }
+          
+          .password-input {
+            padding-right: 46px;
+          }
+          
+          .password-toggle {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+          }
         }
       `}</style>
     </div>

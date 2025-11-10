@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Home } from 'lucide-react';
 
 export default function StudentRegisterForm() {
   const router = useRouter();
@@ -73,7 +74,8 @@ export default function StudentRegisterForm() {
         onClick={() => router.push('/')}
         className="back-button glass-card"
       >
-        ← بازگشت به خانه
+        <Home></Home>
+        {/* ← بازگشت به خانه */}
       </button>
 
       {/* کارت ثبت نام */}

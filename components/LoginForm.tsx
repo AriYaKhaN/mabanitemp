@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Home } from 'lucide-react';
 
 export default function LoginForm() {
   const Router = useRouter();
@@ -67,7 +68,7 @@ export default function LoginForm() {
         className="home-button"
         title="بازگشت به خانه"
       >
-        🏠
+        <Home></Home>
       </button>
 
       {/* کارت ورود */}

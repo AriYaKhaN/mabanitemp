@@ -513,3 +513,543 @@ html, body {
     right: 20px;
   }
 }
+
+/* @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap'); */
+
+/* ریست استایل‌ها */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Vazirmatn', sans-serif;
+  direction: rtl;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+/* استایل‌های عمومی */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* استایل‌های هدر */
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.logo-text h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.logo-text p {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.student-count {
+  background: #edf2f7;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.logout-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #c53030;
+  transform: translateY(-1px);
+}
+
+/* استایل کارت‌های آمار */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.8rem;
+}
+
+.stat-icon.total {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.stat-icon.graded {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+}
+
+.stat-icon.ungraded {
+  background: linear-gradient(135deg, #ed8936, #dd6b20);
+  color: white;
+}
+
+.stat-card h3 {
+  font-size: 0.95rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.stat-number.total {
+  color: #667eea;
+}
+
+.stat-number.graded {
+  color: #48bb78;
+}
+
+.stat-number.ungraded {
+  color: #ed8936;
+}
+
+/* استایل جدول */
+.table-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.table-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.table-time {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: #f7fafc;
+  padding: 1rem 1.5rem;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: #f7fafc;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* استایل‌های وضعیت‌ها */
+.ta-badge {
+  background: #ebf8ff;
+  color: #3182ce;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.grade-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.grade-badge.has-grade {
+  background: #f0fff4;
+  color: #38a169;
+}
+
+.grade-badge.no-grade {
+  background: #fed7d7;
+  color: #e53e3e;
+}
+
+/* استایل دکمه‌ها */
+.action-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.action-btn.edit {
+  background: #ed8936;
+}
+
+.action-btn.edit:hover {
+  background: #dd6b20;
+}
+
+/* استایل مودال */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #718096;
+  background: #f7fafc;
+}
+
+.student-info {
+  background: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.student-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.student-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.submit-btn {
+  flex: 1;
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #38a169;
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #a0aec0;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #718096;
+  transform: translateY(-1px);
+}
+
+/* استایل‌های loading و error */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-left: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #718096;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .table {
+    font-size: 0.8rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+}

@@ -2,20 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { Inter } from '@next/font/google';
 
-export default function RegisterForm() {
+export default function StudentRegisterForm() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    password: '',
+    studentCode: '',
+    section: '1',
+    ta: '5'
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -28,8 +27,15 @@ export default function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // اعتبارسنجی کد دانشجویی
+    if (!/^\d+$/.test(formData.studentCode)) {
+      setError('کد دانشجویی باید فقط شامل اعداد باشد');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch('/api/register-student', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,10 +46,8 @@ export default function RegisterForm() {
       const data = await response.json();
 
       if (response.ok) {
-        // نمایش پیام موفقیت
-        setError('');
-        alert('🎉 ثبت نام با موفقیت انجام شد!');
-        router.push('/login');
+        alert('🎉 ثبت نام دانشجو با موفقیت انجام شد!');
+        router.push('/');
       } else {
         setError(data.error || 'خطایی در ثبت نام رخ داده است');
       }
@@ -54,27 +58,6 @@ export default function RegisterForm() {
       setLoading(false);
     }
   };
-
-  // تابع تست اتصال به دیتابیس
-  // const testDatabaseConnection = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch('/api/test-db');
-  //     const data = await response.json();
-      
-  //     if (response.ok) {
-  //       alert('✅ اتصال به دیتابیس موفقیت‌آمیز بود!');
-  //       console.log('اطلاعات دیتابیس:', data);
-  //     } else {
-  //       alert('❌ خطا در اتصال به دیتابیس: ' + data.error);
-  //     }
-  //   } catch (error) {
-  //     alert('❌ خطا در تست اتصال به دیتابیس');
-  //     console.error('خطا:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   return (
     <div className="register-container">
@@ -93,24 +76,15 @@ export default function RegisterForm() {
         ← بازگشت به خانه
       </button>
 
-      {/* دکمه تست دیتابیس
-      <button 
-        onClick={testDatabaseConnection}
-        className="back-button glass-card"
-        style={{ top: '100px' }}
-      >
-        🗄️ تست اتصال دیتابیس
-      </button> */}
-
       {/* کارت ثبت نام */}
       <div className="register-card glass-card">
         <div className="register-header">
           <div className="avatar-container">
-            <div className="avatar">👤</div>
+            <div className="avatar">🎓</div>
             <div className="avatar-ring"></div>
           </div>
-          <h1 className="register-title">ثبت نام</h1>
-          <p className="register-subtitle">حساب کاربری جدید ایجاد کنید</p>
+          <h1 className="register-title">ثبت نام دانشجو</h1>
+          <p className="register-subtitle">اطلاعات دانشجویی خود را وارد کنید</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -122,50 +96,59 @@ export default function RegisterForm() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="نام کامل"
+              placeholder="نام و نام خانوادگی"
               required
               className="glass-input form-input"
               disabled={loading}
             />
           </div>
 
-          {/* فیلد ایمیل */}
+          {/* فیلد کد دانشجویی */}
           <div className="form-group">
-            <div className="form-icon">📧</div>
+            <div className="form-icon">🎫</div>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="studentCode"
+              value={formData.studentCode}
               onChange={handleChange}
-              placeholder="آدرس ایمیل"
+              placeholder="کد دانشجویی"
               required
               className="glass-input form-input"
               disabled={loading}
             />
           </div>
 
-          {/* فیلد رمز عبور */}
+          {/* فیلد سکشن */}
           <div className="form-group">
-            <div className="form-icon">🔒</div>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              value={formData.password}
+            <div className="form-icon">📚</div>
+            <select
+              name="section"
+              value={formData.section}
               onChange={handleChange}
-              placeholder="رمز عبور (حداقل ۶ کاراکتر)"
-              required
-              minLength={6}
               className="glass-input form-input"
-              disabled={loading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="password-toggle"
               disabled={loading}
             >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
+              <option value="1">دوشنبه 13:15 الی 15:45</option>
+              <option value="2">دوشنبه 15:45 الی 18:30</option>
+            </select>
+          </div>
+
+          {/* فیلد TA */}
+          <div className="form-group">
+            <div className="form-icon">👨‍🏫</div>
+            <select
+              name="ta"
+              value={formData.ta}
+              onChange={handleChange}
+              className="glass-input form-input"
+              disabled={loading}
+            >
+              <option value="5" className='text-black bg-white'>آریا تاجدار</option>
+              <option value="6" className='text-black bg-white'>رقیه اسلامی</option>
+              <option value="7" className='text-black bg-white'>مبینا همتی</option>
+              <option value="8" className='text-black bg-white'>میترا محمدی</option>
+              <option value="9" className='text-black bg-white'>علیرضا درخشان</option>
+            </select>
           </div>
 
           {/* نمایش خطا */}
@@ -187,23 +170,23 @@ export default function RegisterForm() {
                 <span className="loading-spinner"></span>
               </span>
             ) : (
-              '🎯 ایجاد حساب کاربری'
+              '🎓 ثبت نام دانشجو'
             )}
           </button>
         </form>
 
         <div className="register-footer">
           <p>
-            قبلاً حساب دارید؟{' '}
+            قبلاً ثبت نام کرده‌اید؟{' '}
             <a 
-              href="/login" 
+              href="/" 
               className="login-link"
               onClick={(e) => {
                 e.preventDefault();
-                router.push('/login');
+                router.push('/');
               }}
             >
-              وارد حساب شوید
+              بازگشت به صفحه اصلی
             </a>
           </p>
         </div>

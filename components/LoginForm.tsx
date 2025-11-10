@@ -123,10 +123,10 @@ export default function LoginForm() {
           {/* لینک فراموشی رمز عبور */}
           <div className="forgot-password">
             <a 
-              href="/forgot-password"
+              // href="/forgot-password"
               onClick={(e) => {
                 e.preventDefault();
-                Router.push('/forgot-password');
+                // Router.push('/forgot-password');
               }}
             >
               رمز عبور را فراموش کرده‌اید؟

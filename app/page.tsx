@@ -1,4 +1,9 @@
+"use client"
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+// const Router = useRouter()
 
 export default function HomePage() {
   return (
@@ -18,19 +23,21 @@ export default function HomePage() {
 
         {/* عنوان و توضیحات */}
         <h1 className="hero-title">
-          به دنیای مدرن
+          به کلاس
           <br />
-          ما خوش آمدید
+           مبانی کامپیوتر <br /> دکتر ساعدی
+          <br />
+         خوش آمدید
         </h1>
 
         <p className="hero-subtitle">
-          با طراحی‌های پیشرفته و تجربه کاربری بی‌نظیر، سفری جذاب را در پلتفرم ما آغاز کنید
+         سیستم مدیریت دانشجویان
         </p>
 
         {/* دکمه‌های اقدام */}
         <div className="cta-buttons">
           <Link href="/ta_register" className="cta-primary glass-button">
-            🎯 شروع کنید
+            🎯 ثبت نام
           </Link>
           <Link href="/login" className="cta-secondary glass-card">
             ورود به حساب
@@ -40,26 +47,32 @@ export default function HomePage() {
         <div className="features-grid">
           {[
             {
-              icon: '🔐',
-              title: 'امنیت پیشرفته',
-              desc: 'اطلاعات شما با آخرین تکنولوژی‌های امنیتی محافظت می‌شود'
+              icon: '⚡',
+              title: 'سکشن اول',
+              desc: 'دوشنبه ساعت 13:15 الی 15:45',
+              url : 'sec1'
             },
             {
               icon: '⚡',
-              title: 'سرعت فوق‌العاده',
-              desc: 'تجربه کاربری سریع و روان با بهینه‌سازی پیشرفته'
+              title: 'سکشم دوم',
+              desc: 'دوشنبه ساعت 15:45 الی 18:30',
+              url : 'sec2'
             },
-            {
-              icon: '🎨',
-              title: 'طراحی مدرن',
-              desc: 'رابط کاربری زیبا و intuitive با افکت‌های پیشرفته'
-            },
+            // {
+            //   icon: '🎨',
+            //   title: 'طراحی مدرن',
+            //   desc: 'رابط کاربری زیبا و intuitive با افکت‌های پیشرفته'
+            // },
           ].map((feature, index) => (
-            <div key={index} className="feature-card glass-card">
+            // <a href={`/${feature.url}`}>
+            <div key={index} onClick={()=>{
+              // useRouter.push(`${feature.url}`)
+            }} className="feature-card glass-card">
               <span className="feature-icon">{feature.icon}</span>
               <h3 className="feature-title">{feature.title}</h3>
               <p className="feature-desc">{feature.desc}</p>
             </div>
+            // </a>
 
           ))}
         </div>

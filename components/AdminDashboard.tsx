@@ -108,7 +108,7 @@ export default function AdminDashboard() {
       setError('خطا در ثبت نمره');
     }
   };
-
+//
   if (!admin) {
     return (
       <div className="loading-container">

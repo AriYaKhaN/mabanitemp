@@ -69,7 +69,7 @@ export default function AdminRegisterForm() {
         <Home></Home>
         {/* ← بازگشت به خانه */}
       </button>
-//
+
       {/* کارت ثبت نام ادمین */}
       <div className="register-card glass-card">
         <div className="register-header">

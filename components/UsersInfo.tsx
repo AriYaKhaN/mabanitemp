@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import WindowFloat from './WindowFloat';
 
 interface User {
   _id: string;
   name: string;
-  email: string;
-  phone: string;
+  studentCode: string;
+  ta: string;
   joinDate: string;
   status: 'active' | 'inactive';
   role: string;
@@ -17,6 +17,55 @@ interface User {
   lastLogin?: string;
 }
 
+// ثابت‌های جدا شده برای مدیریت بهتر
+const TA_MAPPING: Record<string, string> = {
+  '5': 'آریا تاجدار',
+  '6': 'رقیه اسلامی',
+  '7': 'مبینا همتی',
+  '8': 'میترا محمدی',
+  '9': 'علیرضا درخشان'
+};
+
+const ROLE_COLORS: Record<string, string> = {
+  'مدیر': '#8b5cf6',
+  'کاربر عادی': '#3b82f6',
+  'نویسنده': '#f59e0b',
+  'مشتری': '#06b6d4',
+  'کاربر ویژه': '#ec4899',
+  'مهمان': '#6b7280',
+  'admin': '#8b5cf6',
+  'user': '#3b82f6',
+  'author': '#f59e0b',
+  'customer': '#06b6d4',
+  'vip': '#ec4899',
+  'guest': '#6b7280'
+};
+
+const SAMPLE_USERS: User[] = [
+  {
+    _id: '1',
+    name: 'علی محمدی',
+    studentCode: 'ali.mohammadi@example.com',
+    ta: '09123456789',
+    joinDate: '1402/05/15',
+    status: 'active',
+    role: 'مدیر',
+    avatar: '👨‍💼',
+    createdAt: '2023-08-01'
+  },
+  {
+    _id: '2',
+    name: 'فاطمه احمدی',
+    studentCode: 'fateme.ahmadi@example.com',
+    ta: '09129876543',
+    joinDate: '1402/06/20',
+    status: 'active',
+    role: 'کاربر عادی',
+    avatar: '👩‍💻',
+    createdAt: '2023-09-01'
+  }
+];
+
 export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
@@ -24,102 +73,8 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
 
-  // دریافت کاربران از API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        
-        const response = await fetch('/api/users');
-        
-        if (!response.ok) {
-          throw new Error('خطا در دریافت اطلاعات کاربران');
-        }
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          setUsers(data.users);
-        } else {
-          throw new Error(data.error || 'خطا در دریافت اطلاعات');
-        }
-      } catch (err) {
-        console.error('Error fetching users:', err);
-        setError('خطا در ارتباط با سرور. لطفا دوباره تلاش کنید.');
-        
-        // داده‌های نمونه برای حالت آفلاین
-        const sampleUsers: User[] = [
-          {
-            _id: '1',
-            name: 'علی محمدی',
-            email: 'ali.mohammadi@example.com',
-            phone: '09123456789',
-            joinDate: '1402/05/15',
-            status: 'active',
-            role: 'مدیر',
-            avatar: '👨‍💼',
-            createdAt: '2023-08-01'
-          },
-          {
-            _id: '2',
-            name: 'فاطمه احمدی',
-            email: 'fateme.ahmadi@example.com',
-            phone: '09129876543',
-            joinDate: '1402/06/20',
-            status: 'active',
-            role: 'کاربر عادی',
-            avatar: '👩‍💻',
-            createdAt: '2023-09-01'
-          }
-        ];
-        setUsers(sampleUsers);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const getStatusColor = (status: string) => {
-    return status === 'active' ? '#10b981' : '#ef4444';
-  };
-
-  const getRoleColor = (role: string) => {
-    const colors: { [key: string]: string } = {
-      'مدیر': '#8b5cf6',
-      'کاربر عادی': '#3b82f6',
-      'نویسنده': '#f59e0b',
-      'مشتری': '#06b6d4',
-      'کاربر ویژه': '#ec4899',
-      'مهمان': '#6b7280',
-      'admin': '#8b5cf6',
-      'user': '#3b82f6',
-      'author': '#f59e0b',
-      'customer': '#06b6d4',
-      'vip': '#ec4899',
-      'guest': '#6b7280'
-    };
-    return colors[role] || '#6b7280';
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat('fa-IR').format(date);
-    } catch {
-      return dateString;
-    }
-  };
-
-  const handleRefresh = async () => {
+  // تابع دریافت کاربران
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -143,21 +98,70 @@ export default function UsersPage() {
         throw new Error(data.error || 'خطا در دریافت اطلاعات');
       }
     } catch (err) {
-      console.error('Error refreshing users:', err);
-      setError('خطا در بروزرسانی اطلاعات');
+      console.error('Error fetching users:', err);
+      setError('خطا در ارتباط با سرور. لطفا دوباره تلاش کنید.');
+      setUsers(SAMPLE_USERS);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // دریافت کاربران هنگام mount
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // فیلتر کردن کاربران با useMemo برای بهینه‌سازی
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm.trim()) return users;
+    
+    const term = searchTerm.toLowerCase();
+    return users.filter(user =>
+      user.name.toLowerCase().includes(term) ||
+      user.ta.toLowerCase().includes(term) ||
+      user.role.toLowerCase().includes(term)
+    );
+  }, [users, searchTerm]);
+
+  // آمار کاربران با useMemo
+  const userStats = useMemo(() => ({
+    total: users.length,
+    active: users.filter(u => u.status === 'active').length,
+    inactive: users.filter(u => u.status === 'inactive').length
+  }), [users]);
+
+  // توابع کمکی
+  const getStatusColor = useCallback((status: string) => {
+    return status === 'active' ? '#10b981' : '#ef4444';
+  }, []);
+
+  const getRoleColor = useCallback((role: string) => {
+    return ROLE_COLORS[role] || '#6b7280';
+  }, []);
+
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('fa-IR').format(date);
+    } catch {
+      return dateString;
+    }
+  }, []);
+
+  const getTaName = useCallback((taCode: string) => {
+    return TA_MAPPING[taCode] || taCode;
+  }, []);
+
+  const handleClearSearch = useCallback(() => setSearchTerm(''), []);
+  const handleClearError = useCallback(() => setError(''), []);
 
   return (
     <div className="users-container">
       {/* اشکال شناور در پس‌زمینه */}
       <div className="floating-shapes">
-        <div className="shape shape-1"></div>
-        <div className="shape shape-2"></div>
-        <div className="shape shape-3"></div>
-        <div className="shape shape-4"></div>
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className={`shape shape-${i}`} />
+        ))}
       </div>
 
       {/* دکمه بازگشت */}
@@ -165,12 +169,13 @@ export default function UsersPage() {
         onClick={() => router.push('/')}
         className="home-button"
         title="بازگشت به خانه"
+        aria-label="بازگشت به صفحه اصلی"
       >
         🏠
       </button>
 
       {/* هدر صفحه */}
-      <div className="page-header">
+      <header className="page-header">
         <div className="header-content">
           <div className="title-section">
             <h1 className="page-title">👥 مدیریت کاربران</h1>
@@ -178,9 +183,10 @@ export default function UsersPage() {
           </div>
           <div className="header-actions">
             <button 
-              onClick={handleRefresh}
+              onClick={fetchUsers}
               disabled={loading}
               className="refresh-button"
+              aria-label="بروزرسانی لیست کاربران"
             >
               {loading ? '🔄' : '🔄'} بروزرسانی
             </button>
@@ -188,147 +194,64 @@ export default function UsersPage() {
         </div>
 
         <div className="stats-cards">
-          <div className="stat-card">
-            <div className="stat-icon">👤</div>
-            <div className="stat-info">
-              <div className="stat-number">{users.length}</div>
-              <div className="stat-label">کاربر کل</div>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">✅</div>
-            <div className="stat-info">
-              <div className="stat-number">{users.filter(u => u.status === 'active').length}</div>
-              <div className="stat-label">فعال</div>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">⏸️</div>
-            <div className="stat-info">
-              <div className="stat-number">{users.filter(u => u.status === 'inactive').length}</div>
-              <div className="stat-label">غیرفعال</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* نوار جستجو و فیلتر */}
-      <div className="search-section">
-        <div className="search-container">
-          <div className="search-icon">🔍</div>
-          <input
-            type="text"
-            placeholder="جستجو بر اساس نام، ایمیل یا نقش..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+          <StatCard 
+            icon="👤"
+            number={userStats.total}
+            label="کاربر کل"
           />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="clear-search"
-            >
-              ✕
-            </button>
-          )}
+          <StatCard 
+            icon="✅"
+            number={userStats.active}
+            label="فعال"
+          />
+          <StatCard 
+            icon="⏸️"
+            number={userStats.inactive}
+            label="غیرفعال"
+          />
         </div>
-      </div>
+      </header>
+
+      {/* نوار جستجو */}
+      <SearchSection 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onClearSearch={handleClearSearch}
+      />
 
       {/* نمایش خطا */}
       {error && (
-        <div className="error-banner">
-          ⚠️ {error}
-          <button onClick={() => setError('')} className="error-close">✕</button>
-        </div>
+        <ErrorBanner 
+          message={error}
+          onClose={handleClearError}
+        />
       )}
 
       {/* محتوای اصلی */}
-      <div className="main-content">
+      <main className="main-content">
         {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner large"></div>
-            <p>در حال بارگذاری کاربران از پایگاه داده...</p>
-          </div>
+          <LoadingSpinner />
         ) : (
           <>
-            <div className="users-info">
-              <span className="users-count">
-                نمایش {filteredUsers.length} از {users.length} کاربر
-              </span>
-            </div>
+            <UsersInfo 
+              filteredCount={filteredUsers.length}
+              totalCount={users.length}
+            />
 
-            <div className="users-grid">
-              {filteredUsers.map((user) => (
-                <div key={user._id} className="user-card">
-                  <div className="card-header">
-                    <div className="user-avatar">
-                      {user.avatar || '👤'}
-                    </div>
-                    <div className="user-status" style={{ backgroundColor: getStatusColor(user.status) }}>
-                      {user.status === 'active' ? 'فعال' : 'غیرفعال'}
-                    </div>
-                  </div>
-                  
-                  <div className="user-info">
-                    <h3 className="user-name">{user.name}</h3>
-                    <p className="user-role" style={{ color: getRoleColor(user.role) }}>
-                      {user.role}
-                    </p>
-                    
-                    <div className="user-details">
-                      <div className="detail-item">
-                        <span className="detail-icon">📧</span>
-                        <span className="detail-text">{user.email}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="detail-icon">📱</span>
-                        <span className="detail-text">{user.phone}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="detail-icon">📅</span>
-                        <span className="detail-text">عضویت: {formatDate(user.createdAt)}</span>
-                      </div>
-                      {user.lastLogin && (
-                        <div className="detail-item">
-                          <span className="detail-icon">🕒</span>
-                          <span className="detail-text">آخرین ورود: {formatDate(user.lastLogin)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="card-actions">
-                    <button className="action-btn edit-btn"
-                    onClick={()=>{
-                        <WindowFloat><div></div></WindowFloat>
-                    }}
-                    >
-                      ✏️ ویرایش
-                    </button>
-                    <button className="action-btn view-btn">
-                      👁️ مشاهده
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <UsersGrid 
+              users={filteredUsers}
+              getStatusColor={getStatusColor}
+              getRoleColor={getRoleColor}
+              formatDate={formatDate}
+              getTaName={getTaName}
+            />
 
             {filteredUsers.length === 0 && (
-              <div className="empty-state">
-                <div className="empty-icon">🔍</div>
-                <h3>کاربری یافت نشد</h3>
-                <p>هیچ کاربری با مشخصات جستجو شده مطابقت ندارد</p>
-                <button 
-                  onClick={() => setSearchTerm('')}
-                  className="clear-filter-btn"
-                >
-                  پاک کردن فیلتر
-                </button>
-              </div>
+              <EmptyState onClearFilter={handleClearSearch} />
             )}
           </>
         )}
-      </div>
+      </main>
 
       <style jsx>{`
         .users-container {
@@ -355,6 +278,7 @@ export default function UsersPage() {
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
+          animation: float 6s ease-in-out infinite;
         }
 
         .shape-1 {
@@ -362,7 +286,6 @@ export default function UsersPage() {
           height: 80px;
           top: 10%;
           left: 5%;
-          animation: float 6s ease-in-out infinite;
         }
 
         .shape-2 {
@@ -370,7 +293,7 @@ export default function UsersPage() {
           height: 120px;
           top: 70%;
           right: 5%;
-          animation: float 8s ease-in-out infinite 1s;
+          animation-delay: 1s;
         }
 
         .shape-3 {
@@ -378,7 +301,7 @@ export default function UsersPage() {
           height: 60px;
           bottom: 10%;
           left: 15%;
-          animation: float 5s ease-in-out infinite 0.5s;
+          animation-delay: 0.5s;
         }
 
         .shape-4 {
@@ -386,7 +309,7 @@ export default function UsersPage() {
           height: 100px;
           top: 20%;
           right: 15%;
-          animation: float 7s ease-in-out infinite 1.5s;
+          animation-delay: 1.5s;
         }
 
         @keyframes float {
@@ -490,6 +413,66 @@ export default function UsersPage() {
           flex-wrap: wrap;
         }
 
+        .main-content {
+          position: relative;
+          z-index: 2;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+          .users-container {
+            padding: 15px;
+          }
+
+          .header-content {
+            flex-direction: column;
+          }
+
+          .stats-cards {
+            width: 100%;
+            justify-content: space-between;
+          }
+
+          .page-title {
+            font-size: 2rem;
+          }
+
+          .home-button {
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .card-actions {
+            flex-direction: column;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// کامپوننت‌های جداگانه برای مدیریت بهتر
+
+interface StatCardProps {
+  icon: string;
+  number: number;
+  label: string;
+}
+
+function StatCard({ icon, number, label }: StatCardProps) {
+  return (
+    <div className="stat-card">
+      <div className="stat-icon">{icon}</div>
+      <div className="stat-info">
+        <div className="stat-number">{number}</div>
+        <div className="stat-label">{label}</div>
+      </div>
+      <style jsx>{`
         .stat-card {
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -529,6 +512,51 @@ export default function UsersPage() {
           font-size: 0.9rem;
         }
 
+        @media (max-width: 480px) {
+          .stat-card {
+            min-width: 100px;
+            padding: 15px;
+          }
+
+          .stat-number {
+            font-size: 1.5rem;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+interface SearchSectionProps {
+  searchTerm: string;
+  onSearchChange: (term: string) => void;
+  onClearSearch: () => void;
+}
+
+function SearchSection({ searchTerm, onSearchChange, onClearSearch }: SearchSectionProps) {
+  return (
+    <div className="search-section">
+      <div className="search-container">
+        <div className="search-icon">🔍</div>
+        <input
+          type="text"
+          placeholder="جستجو بر اساس نام، ایمیل یا نقش..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="search-input"
+          aria-label="جستجوی کاربران"
+        />
+        {searchTerm && (
+          <button
+            onClick={onClearSearch}
+            className="clear-search"
+            aria-label="پاک کردن جستجو"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+      <style jsx>{`
         .search-section {
           position: relative;
           z-index: 2;
@@ -594,7 +622,24 @@ export default function UsersPage() {
         .clear-search:hover {
           background: rgba(255, 255, 255, 0.3);
         }
+      `}</style>
+    </div>
+  );
+}
 
+interface ErrorBannerProps {
+  message: string;
+  onClose: () => void;
+}
+
+function ErrorBanner({ message, onClose }: ErrorBannerProps) {
+  return (
+    <div className="error-banner" role="alert">
+      ⚠️ {message}
+      <button onClick={onClose} className="error-close" aria-label="بستن اخطار">
+        ✕
+      </button>
+      <style jsx>{`
         .error-banner {
           background: rgba(239, 68, 68, 0.15);
           border: 1px solid rgba(239, 68, 68, 0.3);
@@ -618,12 +663,17 @@ export default function UsersPage() {
           font-size: 1rem;
           padding: 5px;
         }
+      `}</style>
+    </div>
+  );
+}
 
-        .main-content {
-          position: relative;
-          z-index: 2;
-        }
-
+function LoadingSpinner() {
+  return (
+    <div className="loading-container">
+      <div className="loading-spinner large"></div>
+      <p>در حال بارگذاری کاربران از پایگاه داده...</p>
+      <style jsx>{`
         .loading-container {
           display: flex;
           flex-direction: column;
@@ -643,6 +693,27 @@ export default function UsersPage() {
           margin-bottom: 20px;
         }
 
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+interface UsersInfoProps {
+  filteredCount: number;
+  totalCount: number;
+}
+
+function UsersInfo({ filteredCount, totalCount }: UsersInfoProps) {
+  return (
+    <div className="users-info">
+      <span className="users-count">
+        نمایش {filteredCount} از {totalCount} کاربر
+      </span>
+      <style jsx>{`
         .users-info {
           margin-bottom: 20px;
         }
@@ -651,13 +722,110 @@ export default function UsersPage() {
           color: rgba(255, 255, 255, 0.8);
           font-size: 0.9rem;
         }
+      `}</style>
+    </div>
+  );
+}
 
+interface UsersGridProps {
+  users: User[];
+  getStatusColor: (status: string) => string;
+  getRoleColor: (role: string) => string;
+  formatDate: (date: string) => string;
+  getTaName: (taCode: string) => string;
+}
+
+function UsersGrid({ users, getStatusColor, getRoleColor, formatDate, getTaName }: UsersGridProps) {
+  return (
+    <div className="users-grid">
+      {users.map((user) => (
+        <UserCard
+          key={user._id}
+          user={user}
+          getStatusColor={getStatusColor}
+          getRoleColor={getRoleColor}
+          formatDate={formatDate}
+          getTaName={getTaName}
+        />
+      ))}
+      <style jsx>{`
         .users-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 20px;
         }
 
+        @media (max-width: 768px) {
+          .users-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+interface UserCardProps {
+  user: User;
+  getStatusColor: (status: string) => string;
+  getRoleColor: (role: string) => string;
+  formatDate: (date: string) => string;
+  getTaName: (taCode: string) => string;
+}
+
+function UserCard({ user, getStatusColor, getRoleColor, formatDate, getTaName }: UserCardProps) {
+  return (
+    <div className="user-card">
+      <div className="card-header">
+        <div className="user-avatar">
+          {user.avatar || '👤'}
+        </div>
+        <div 
+          className="user-status" 
+          style={{ backgroundColor: getStatusColor(user.status) }}
+        >
+          {user.status === 'active' ? 'فعال' : 'غیرفعال'}
+        </div>
+      </div>
+      
+      <div className="user-info">
+        <h3 className="user-name">{user.name}</h3>
+        <p className="user-role" style={{ color: getRoleColor(user.role) }}>
+          {user.role}
+        </p>
+        
+        <div className="user-details">
+          {/* <div className="detail-item">
+            <span className="detail-icon">📧</span>
+            <span className="detail-text">{user.studentCode}</span>
+          </div> */}
+          {/* <div className="detail-item">
+            <span className="detail-icon">📱</span>
+            <span className="detail-text">{getTaName(user.ta)}</span>
+          </div> */}
+          <div className="detail-item">
+            <span className="detail-icon">📅</span>
+            <span className="detail-text">عضویت: {formatDate(user.createdAt)}</span>
+          </div>
+          {user.lastLogin && (
+            <div className="detail-item">
+              <span className="detail-icon">🕒</span>
+              <span className="detail-text">آخرین ورود: {formatDate(user.lastLogin)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="card-actions">
+        {/* <button className="action-btn edit-btn">
+          ✏️ ویرایش
+        </button>
+        <button className="action-btn view-btn">
+          👁️ مشاهده
+        </button> */}
+      </div>
+
+      <style jsx>{`
         .user-card {
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -780,6 +948,44 @@ export default function UsersPage() {
           transform: translateY(-2px);
         }
 
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .user-card {
+            padding: 20px;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+interface EmptyStateProps {
+  onClearFilter: () => void;
+}
+
+function EmptyState({ onClearFilter }: EmptyStateProps) {
+  return (
+    <div className="empty-state">
+      <div className="empty-icon">🔍</div>
+      <h3>کاربری یافت نشد</h3>
+      <p>هیچ کاربری با مشخصات جستجو شده مطابقت ندارد</p>
+      <button 
+        onClick={onClearFilter}
+        className="clear-filter-btn"
+      >
+        پاک کردن فیلتر
+      </button>
+      <style jsx>{`
         .empty-state {
           text-align: center;
           padding: 60px 20px;
@@ -816,78 +1022,6 @@ export default function UsersPage() {
         .clear-filter-btn:hover {
           background: rgba(255, 255, 255, 0.3);
           transform: translateY(-2px);
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        /* رسپانسیو */
-        @media (max-width: 768px) {
-          .users-container {
-            padding: 15px;
-          }
-
-          .header-content {
-            flex-direction: column;
-          }
-
-          .stats-cards {
-            width: 100%;
-            justify-content: space-between;
-          }
-
-          .stat-card {
-            flex: 1;
-            min-width: 120px;
-          }
-
-          .users-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .page-title {
-            font-size: 2rem;
-          }
-
-          .home-button {
-            top: 15px;
-            right: 15px;
-            width: 45px;
-            height: 45px;
-            font-size: 18px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .stat-card {
-            min-width: 100px;
-            padding: 15px;
-          }
-
-          .stat-number {
-            font-size: 1.5rem;
-          }
-
-          .card-actions {
-            flex-direction: column;
-          }
-
-          .user-card {
-            padding: 20px;
-          }
         }
       `}</style>
     </div>

@@ -54,7 +54,7 @@ export default function HomePage() {
             },
             {
               icon: '⚡',
-              title: 'سکشم دوم',
+              title: 'سکشن دوم',
               desc: 'دوشنبه ساعت 15:45 الی 18:30',
               url : 'sec2'
             },

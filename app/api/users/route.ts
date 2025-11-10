@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     await client.connect();
 
     const database = client.db('mabanitest');
-    const usersCollection = database.collection('users');
+    const usersCollection = database.collection('students');
 
     // دریافت تمام کاربران
     const users = await usersCollection.find({}).toArray();

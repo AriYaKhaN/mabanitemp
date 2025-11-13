@@ -1,0 +1,861 @@
+.adminDashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Vazirmatn', sans-serif;
+  direction: rtl;
+}
+
+/* استایل‌های هدر */
+.adminHeader {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.adminHeaderContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.adminLogo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.adminLogoIcon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.adminLogoText h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 5px;
+}
+
+.adminLogoText p {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.adminHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.adminStudentCount {
+  background: #edf2f7;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.adminLogoutBtn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.adminLogoutBtn:hover {
+  background: #c53030;
+  transform: translateY(-2px);
+}
+
+/* استایل کارت‌های آمار */
+.adminStatsGrid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.adminStatCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.adminStatCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.adminStatIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 1.8rem;
+}
+
+.adminStatIcon.total {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.adminStatIcon.graded {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+}
+
+.adminStatIcon.files {
+  background: linear-gradient(135deg, #9f7aea, #805ad5);
+  color: white;
+}
+
+.adminStatCard h3 {
+  font-size: 0.95rem;
+  color: #718096;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.adminStatNumber {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.adminStatNumber.total {
+  color: #667eea;
+}
+
+.adminStatNumber.graded {
+  color: #48bb78;
+}
+
+.adminStatNumber.files {
+  color: #9f7aea;
+}
+
+/* استایل فیلتر و جستجو */
+.adminFilterSection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 24px;
+}
+
+.adminFilterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.adminFilterGroup {
+  margin-bottom: 0;
+}
+
+.adminFilterGroup label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 8px;
+}
+
+.adminSearchInput, .adminFilterSelect {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.adminSearchInput:focus, .adminFilterSelect:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* استایل جدول */
+.adminTableContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.adminTableHeader {
+  padding: 24px 32px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adminTableHeader h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.adminTableInfo {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.adminTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adminTable th {
+  background: #f7fafc;
+  padding: 16px 24px;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.adminTable td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.adminTable tbody tr {
+  transition: all 0.2s ease;
+}
+
+.adminTable tbody tr:hover {
+  background: #f7fafc;
+}
+
+.adminTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* استایل‌های وضعیت‌ها */
+.adminTaBadge {
+  background: #ebf8ff;
+  color: #3182ce;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.adminGradeBadge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.adminGradeBadge.hasGrade {
+  background: #f0fff4;
+  color: #38a169;
+}
+
+.adminGradeBadge.noGrade {
+  background: #fed7d7;
+  color: #e53e3e;
+}
+
+.adminFileBadge {
+  background: #faf5ff;
+  color: #9f7aea;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* استایل دکمه‌ها */
+.adminActionBtn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adminActionBtn:hover {
+  background: #5a67d8;
+  transform: translateY(-2px);
+}
+
+.adminActionBtn.edit {
+  background: #ed8936;
+}
+
+.adminActionBtn.edit:hover {
+  background: #dd6b20;
+}
+
+.adminActionBtn.download {
+  background: #9f7aea;
+}
+
+.adminActionBtn.download:hover {
+  background: #805ad5;
+}
+
+.adminActionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* استایل مودال */
+.adminModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.adminModal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: adminModalSlideIn 0.3s ease-out;
+}
+
+@keyframes adminModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.adminModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.adminModalHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.adminModalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.adminModalCloseBtn:hover {
+  color: #718096;
+  background: #f7fafc;
+}
+
+.adminStudentInfo {
+  background: #f7fafc;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.adminStudentName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.adminStudentDetails {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.adminFileInfo {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.adminFormGroup {
+  margin-bottom: 24px;
+}
+
+.adminFormGroup label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 8px;
+}
+
+.adminFormInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.adminFormInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.adminModalActions {
+  display: flex;
+  gap: 12px;
+}
+
+.adminSubmitBtn {
+  flex: 1;
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.adminSubmitBtn:hover:not(:disabled) {
+  background: #38a169;
+  transform: translateY(-2px);
+}
+
+.adminSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.adminCancelBtn {
+  flex: 1;
+  background: #a0aec0;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.adminCancelBtn:hover {
+  background: #718096;
+  transform: translateY(-2px);
+}
+
+/* استایل‌های loading و error */
+.adminLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+}
+
+.adminSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-left: 4px solid #667eea;
+  border-radius: 50%;
+  animation: adminSpin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes adminSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.adminErrorContainer {
+  text-align: center;
+  padding: 48px 32px;
+}
+
+.adminErrorIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.adminEmptyState {
+  text-align: center;
+  padding: 60px 32px;
+  color: #718096;
+}
+
+.adminEmptyIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+  .adminHeaderContent {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    height: auto;
+    padding: 20px;
+  }
+  
+  .adminStatsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .adminFilterGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .adminTableHeader {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .adminTable {
+    font-size: 0.8rem;
+  }
+  
+  .adminTable th,
+  .adminTable td {
+    padding: 12px 16px;
+  }
+  
+  .adminModalActions {
+    flex-direction: column;
+  }
+  
+  .adminStudentDetails {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* استایل‌های جدول - آپدیت برای ریسپانسیو */
+.adminTableContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.adminTableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.adminTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px; /* حداقل عرض برای اسکرول */
+}
+
+.adminTable th {
+  background: #f7fafc;
+  padding: 16px 12px;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.adminTable td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* استایل‌های مخصوص موبایل */
+@media (max-width: 768px) {
+  .adminTableContainer {
+    padding: 0 10px;
+    margin: 0 10px 20px 10px;
+    border-radius: 12px;
+  }
+
+  .adminTableHeader {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .adminTableHeader h2 {
+    font-size: 1.1rem;
+  }
+
+  .adminTableInfo {
+    font-size: 0.8rem;
+  }
+
+  .adminTable {
+    min-width: 600px; /* عرض کمتر برای موبایل */
+  }
+
+  .adminTable th,
+  .adminTable td {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+  }
+
+  /* استایل‌های دکمه‌ها در موبایل */
+  .adminActionBtn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  /* استایل‌های badge در موبایل */
+  .adminTaBadge,
+  .adminGradeBadge,
+  .adminFileBadge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  /* مخفی کردن ستون‌های غیرضروری در موبایل */
+  .adminTable th:nth-child(3), /* سکشن */
+  .adminTable td:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .adminTableContainer {
+    margin: 0 5px 15px 5px;
+    border-radius: 8px;
+  }
+
+  .adminTable {
+    min-width: 500px; /* عرض کمتر برای موبایل‌های کوچک */
+  }
+
+  .adminTable th,
+  .adminTable td {
+    padding: 10px 6px;
+    font-size: 0.75rem;
+  }
+
+  /* مخفی کردن ستون‌های بیشتر در موبایل‌های خیلی کوچک */
+  .adminTable th:nth-child(4), /* TA */
+  .adminTable td:nth-child(4) {
+    display: none;
+  }
+
+  .adminActionBtn {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
+
+  .adminActionBtn.download {
+    min-width: 80px;
+  }
+}
+
+/* استایل برای حالت کارد در موبایل (آپشن پیشرفته) */
+.adminMobileCards {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .adminTableWrapper {
+    display: none;
+  }
+
+  .adminMobileCards {
+    display: block;
+    padding: 16px;
+  }
+
+  .adminMobileCard {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .adminMobileCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .adminMobileStudentName {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .adminMobileStudentCode {
+    color: #718096;
+    font-size: 0.85rem;
+    font-family: monospace;
+  }
+
+  .adminMobileCardDetails {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+  }
+
+  .adminMobileDetailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .adminMobileDetailLabel {
+    color: #718096;
+    font-size: 0.75rem;
+  }
+
+  .adminMobileDetailValue {
+    color: #2d3748;
+    font-weight: 500;
+  }
+
+  .adminMobileCardActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .adminMobileActionBtn {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .adminMobileActionBtn.primary {
+    background: #667eea;
+    color: white;
+  }
+
+  .adminMobileActionBtn.primary:hover {
+    background: #5a67d8;
+  }
+
+  .adminMobileActionBtn.secondary {
+    background: #9f7aea;
+    color: white;
+  }
+
+  .adminMobileActionBtn.secondary:hover {
+    background: #805ad5;
+  }
+
+  .adminMobileActionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

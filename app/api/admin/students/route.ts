@@ -3,7 +3,6 @@ import { MongoClient } from 'mongodb';
 
 export async function GET(request: NextRequest) {
   try {
-    // دریافت TA ID از header یا query
     const { searchParams } = new URL(request.url);
     const taId = searchParams.get('taId');
 
@@ -32,16 +31,25 @@ export async function GET(request: NextRequest) {
 
       const students = await studentsCollection.find(query).toArray();
 
+      // تبدیل به فرمت مورد نیاز کامپوننت
+      const formattedStudents = students.map(student => ({
+        id: student._id.toString(),
+        name: student.name,
+        studentCode: student.studentCode,
+        section: student.section,
+        ta: student.ta,
+        createdAt: student.createdAt,
+        quizGrade: student.quizGrade, // اضافه کردن فیلد quizGrade
+        hw1File: student.hw1File,     // اضافه کردن فیلد hw1File
+        hw2File: student.hw2File,     // اضافه کردن فیلد hw2File
+        hw3File: student.hw3File,     // اضافه کردن فیلد hw3File
+        gradedBy: student.gradedBy,   // اضافه کردن فیلد gradedBy
+        updatedAt: student.updatedAt  // اضافه کردن فیلد updatedAt
+      }));
+
       return NextResponse.json({
         success: true,
-        students: students.map(student => ({
-          id: student._id.toString(),
-          name: student.name,
-          studentCode: student.studentCode,
-          section: student.section,
-          ta: student.ta,
-          createdAt: student.createdAt
-        })),
+        students: formattedStudents,
         total: students.length,
         taId: taIdNum
       });

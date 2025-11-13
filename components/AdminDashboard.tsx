@@ -11,6 +11,11 @@ interface Student {
   ta: string;
   createdAt: string;
   quizGrade?: number;
+  hw1File?: string;
+  hw2File?: string;
+  hw3File?: string;
+  gradedBy?: number;
+  updatedAt?: string;
 }
 
 interface Admin {
@@ -30,6 +35,10 @@ export default function AdminDashboard() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [quizGrade, setQuizGrade] = useState('');
   const [showQuizModal, setShowQuizModal] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterTa, setFilterTa] = useState('all');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const adminData = localStorage.getItem('admin');
@@ -41,29 +50,67 @@ export default function AdminDashboard() {
     const adminInfo: Admin = JSON.parse(adminData);
     setAdmin(adminInfo);
     fetchStudents(adminInfo.taId);
-  }, [router]);
+  }, [router, refreshTrigger]);
 
   const fetchStudents = async (taId: number) => {
     try {
       setLoading(true);
+      setError('');
       const response = await fetch(`/api/admin/students?taId=${taId}`);
       const data = await response.json();
 
       if (data.success) {
         setStudents(data.students);
       } else {
-        setError(data.error);
+        setError(data.error || 'خطا در دریافت اطلاعات دانشجویان');
       }
     } catch (err) {
-      setError('خطا در دریافت اطلاعات دانشجویان');
+      setError('خطا در ارتباط با سرور');
+      console.error('Error fetching students:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadFile = async (studentId: string, fileType: string, fileName: string) => {
+    try {
+      setDownloading(`${studentId}-${fileType}`);
+      
+      const response = await fetch(`/api/admin/download?studentId=${studentId}&fileType=${fileType}`);
+      const data = await response.json();
+
+      if (data.success) {
+        // ایجاد لینک دانلود مستقیم
+        const link = document.createElement('a');
+        link.href = data.fileUrl;
+        link.download = fileName || data.fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // نمایش پیام موفقیت
+        setTimeout(() => {
+          alert(`فایل ${fileName} با موفقیت دانلود شد`);
+        }, 500);
+      } else {
+        alert(`خطا در دانلود فایل: ${data.error}`);
+      }
+    } catch (err) {
+      alert('خطا در ارتباط با سرور');
+      console.error('Download error:', err);
+    } finally {
+      setDownloading(null);
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('admin');
     router.push('/login');
+  };
+
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const handleAddQuizGrade = (student: Student) => {
@@ -75,6 +122,12 @@ export default function AdminDashboard() {
   const submitQuizGrade = async () => {
     if (!selectedStudent || !quizGrade) return;
 
+    const grade = parseInt(quizGrade);
+    if (grade < 0 || grade > 20) {
+      alert('نمره باید بین 0 تا 20 باشد');
+      return;
+    }
+
     try {
       const response = await fetch('/api/admin/quiz-grade', {
         method: 'POST',
@@ -83,7 +136,7 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({
           studentId: selectedStudent.id,
-          quizGrade: parseInt(quizGrade),
+          quizGrade: grade,
           taId: admin?.taId
         }),
       });
@@ -93,7 +146,7 @@ export default function AdminDashboard() {
       if (data.success) {
         const updatedStudents = students.map(student =>
           student.id === selectedStudent.id
-            ? { ...student, quizGrade: parseInt(quizGrade) }
+            ? { ...student, quizGrade: grade }
             : student
         );
         setStudents(updatedStudents);
@@ -102,107 +155,184 @@ export default function AdminDashboard() {
         setQuizGrade('');
         alert('✅ نمره با موفقیت ثبت شد');
       } else {
-        setError(data.error);
+        alert(data.error || 'خطا در ثبت نمره');
       }
     } catch (err) {
-      setError('خطا در ثبت نمره');
+      alert('خطا در ارتباط با سرور');
+      console.error('Submit grade error:', err);
     }
   };
-//
+
+  // فیلتر کردن دانشجویان بر اساس جستجو
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         student.studentCode.includes(searchTerm);
+    const matchesTa = filterTa === 'all' || student.ta === filterTa;
+    return matchesSearch && matchesTa;
+  });
+
+  // محاسبه آمار
+  const totalStudents = students.length;
+  const gradedStudents = students.filter(s => s.quizGrade !== undefined).length;
+  const hw1Students = students.filter(s => s.hw1File).length;
+  const averageGrade = students.filter(s => s.quizGrade !== undefined).length > 0 
+    ? (students.reduce((sum, student) => sum + (student.quizGrade || 0), 0) / gradedStudents).toFixed(1)
+    : '0';
+
   if (!admin) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
+      <div className="adminLoadingContainer">
+        <div className="adminSpinner"></div>
         <p>در حال بارگذاری...</p>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="adminDashboard">
       {/* هدر */}
-      <header className="dashboard-header">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <div className="logo-icon">👑</div>
-              <div className="logo-text">
-                <h1>پنل مدیریت {admin.role === 'super_admin' ? 'ادمین کل' : `TA ${admin.taId}`}</h1>
-                <p>{admin.fullName} • {admin.email}</p>
-              </div>
+      <header className="adminHeader">
+        <div className="adminHeaderContent">
+          <div className="adminLogo">
+            <div className="adminLogoIcon">👑</div>
+            <div className="adminLogoText">
+              <h1>پنل مدیریت {admin.role === 'super_admin' ? 'ادمین کل' : `TA ${admin.taId}`}</h1>
+              <p>{admin.fullName} • {admin.email}</p>
             </div>
-            
-            <div className="header-actions">
-              <div className="student-count">
-                📊 {students.length} دانشجو
-              </div>
-              <button className="logout-btn" onClick={handleLogout}>
-                خروج
-              </button>
+          </div>
+          
+          <div className="adminHeaderActions">
+            <div className="adminStudentCount">
+              📊 {totalStudents} دانشجو
             </div>
+            <button 
+              className="adminActionBtn" 
+              onClick={handleRefresh}
+              style={{ background: '#48bb78' }}
+            >
+              🔄 بروزرسانی
+            </button>
+            <button className="adminLogoutBtn" onClick={handleLogout}>
+              خروج
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="container">
-        {/* کارت‌های آمار */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon total">👥</div>
-            <h3>کل دانشجویان</h3>
-            <div className="stat-number total">{students.length}</div>
-          </div>
+      {/* کارت‌های آمار */}
+      <div className="adminStatsGrid">
+        <div className="adminStatCard">
+          <div className="adminStatIcon total">👥</div>
+          <h3>کل دانشجویان</h3>
+          <div className="adminStatNumber total">{totalStudents}</div>
+        </div>
 
-          <div className="stat-card">
-            <div className="stat-icon graded">📝</div>
-            <h3>دارای نمره</h3>
-            <div className="stat-number graded">
-              {students.filter(s => s.quizGrade).length}
-            </div>
-          </div>
+        <div className="adminStatCard">
+          <div className="adminStatIcon graded">📝</div>
+          <h3>دارای نمره</h3>
+          <div className="adminStatNumber graded">{gradedStudents}</div>
+        </div>
 
-          <div className="stat-card">
-            <div className="stat-icon ungraded">⏰</div>
-            <h3>بدون نمره</h3>
-            <div className="stat-number ungraded">
-              {students.filter(s => !s.quizGrade).length}
-            </div>
+        <div className="adminStatCard">
+          <div className="adminStatIcon files">📁</div>
+          <h3>فایل HW1</h3>
+          <div className="adminStatNumber files">{hw1Students}</div>
+        </div>
+
+        <div className="adminStatCard">
+          <div className="adminStatIcon" style={{ background: 'linear-gradient(135deg, #ed8936, #dd6b20)', color: 'white' }}>📊</div>
+          <h3>میانگین نمرات</h3>
+          <div className="adminStatNumber" style={{ color: '#ed8936' }}>{averageGrade}</div>
+        </div>
+      </div>
+
+      {/* فیلتر و جستجو */}
+      <div className="adminFilterSection">
+        <div className="adminFilterGrid">
+          <div className="adminFilterGroup">
+            <label>جستجوی دانشجو</label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="جستجو بر اساس نام یا شماره دانشجویی..."
+              className="adminSearchInput"
+            />
+          </div>
+          <div className="adminFilterGroup">
+            <label>فیلتر بر اساس TA</label>
+            <select
+              value={filterTa}
+              onChange={(e) => setFilterTa(e.target.value)}
+              className="adminFilterSelect"
+            >
+              <option value="all">همه TAها</option>
+              <option value="5">TA 5</option>
+              <option value="6">TA 6</option>
+              <option value="7">TA 7</option>
+              <option value="8">TA 8</option>
+              <option value="9">TA 9</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* جدول دانشجویان */}
+      <div className="adminTableContainer">
+        <div className="adminTableHeader">
+          <h2>📋 لیست دانشجویان {admin.role === 'ta' && `(TA ${admin.taId})`}</h2>
+          <div className="adminTableInfo">
+            نمایش {filteredStudents.length} از {totalStudents} دانشجو
+            {searchTerm && ` • جستجو: "${searchTerm}"`}
+            {filterTa !== 'all' && ` • TA: ${filterTa}`}
           </div>
         </div>
 
-        {/* جدول دانشجویان */}
-        <div className="table-container">
-          <div className="table-header">
-            <h2>📋 لیست دانشجویان {admin.role === 'ta' && `(TA ${admin.taId})`}</h2>
-            <div className="table-time">
-              آخرین بروزرسانی: {new Date().toLocaleTimeString('fa-IR')}
-            </div>
+        {loading ? (
+          <div className="adminLoadingContainer">
+            <div className="adminSpinner"></div>
+            <p>در حال دریافت اطلاعات دانشجویان...</p>
           </div>
-
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p>در حال دریافت اطلاعات دانشجویان...</p>
-            </div>
-          ) : error ? (
-            <div className="error-container">
-              <div className="error-icon">⚠️</div>
-              <p>{error}</p>
-            </div>
-          ) : students.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">📭</div>
-              <p>هیچ دانشجویی یافت نشد</p>
-              <p>
-                {admin.role === 'ta' 
-                  ? 'هیچ دانشجویی برای TA شما ثبت نشده است' 
-                  : 'هنوز دانشجویی در سیستم ثبت نشده است'
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="table">
+        ) : error ? (
+          <div className="adminErrorContainer">
+            <div className="adminErrorIcon">⚠️</div>
+            <p>{error}</p>
+            <button 
+              className="adminActionBtn" 
+              onClick={handleRefresh}
+              style={{ marginTop: '16px' }}
+            >
+              🔄 تلاش مجدد
+            </button>
+          </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="adminEmptyState">
+            <div className="adminEmptyIcon">📭</div>
+            <p>هیچ دانشجویی یافت نشد</p>
+            <p>
+              {searchTerm || filterTa !== 'all' 
+                ? 'لطفاً شرایط جستجو را تغییر دهید' 
+                : 'هنوز دانشجویی در سیستم ثبت نشده است'
+              }
+            </p>
+            {(searchTerm || filterTa !== 'all') && (
+              <button 
+                className="adminActionBtn" 
+                onClick={() => {
+                  setSearchTerm('');
+                  setFilterTa('all');
+                }}
+                style={{ marginTop: '16px' }}
+              >
+                🗑️ پاک کردن فیلترها
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* نمایش جدول در دسکتاپ */}
+            <div className="adminTableWrapper">
+              <table className="adminTable">
                 <thead>
                   <tr>
                     <th>نام دانشجو</th>
@@ -210,39 +340,62 @@ export default function AdminDashboard() {
                     <th>سکشن</th>
                     <th>TA</th>
                     <th>نمره هوم ورک</th>
+                    <th>فایل HW1</th>
                     <th>عملیات</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => (
+                  {filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td>
-                        <div className="student-name">{student.name}</div>
+                        <div className="adminStudentName">{student.name}</div>
                       </td>
                       <td>
-                        <div className="student-code">{student.studentCode}</div>
+                        <div className="adminStudentCode">{student.studentCode}</div>
                       </td>
                       <td>{student.section}</td>
                       <td>
-                        <span className="ta-badge">TA {student.ta}</span>
+                        <span className="adminTaBadge">TA {student.ta}</span>
                       </td>
                       <td>
-                        {student.quizGrade ? (
-                          <span className="grade-badge has-grade">
+                        {student.quizGrade !== undefined ? (
+                          <span className="adminGradeBadge hasGrade">
                             {student.quizGrade}
                           </span>
                         ) : (
-                          <span className="grade-badge no-grade">
+                          <span className="adminGradeBadge noGrade">
                             ثبت نشده
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        {student.hw1File ? (
+                          <button
+                            onClick={() => handleDownloadFile(student.id, 'hw1File', `${student.name}_HW1`)}
+                            disabled={downloading === `${student.id}-hw1File`}
+                            className={`adminActionBtn download`}
+                          >
+                            {downloading === `${student.id}-hw1File` ? (
+                              <>
+                                <div className="adminSpinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                                در حال دانلود...
+                              </>
+                            ) : (
+                              '📥 دانلود HW1'
+                            )}
+                          </button>
+                        ) : (
+                          <span className="adminFileBadge">
+                            ندارد
                           </span>
                         )}
                       </td>
                       <td>
                         <button
                           onClick={() => handleAddQuizGrade(student)}
-                          className={`action-btn ${student.quizGrade ? 'edit' : ''}`}
+                          className={`adminActionBtn ${student.quizGrade !== undefined ? 'edit' : ''}`}
                         >
-                          {student.quizGrade ? '✏️ ویرایش' : '➕ ثبت نمره'}
+                          {student.quizGrade !== undefined ? '✏️ ویرایش' : '➕ ثبت نمره'}
                         </button>
                       </td>
                     </tr>
@@ -250,57 +403,132 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+
+            {/* نمایش کارد در موبایل */}
+            <div className="adminMobileCards">
+              {filteredStudents.map((student) => (
+                <div key={student.id} className="adminMobileCard">
+                  <div className="adminMobileCardHeader">
+                    <div>
+                      <div className="adminMobileStudentName">{student.name}</div>
+                      <div className="adminMobileStudentCode">{student.studentCode}</div>
+                    </div>
+                    <span className="adminTaBadge">TA {student.ta}</span>
+                  </div>
+                  
+                  <div className="adminMobileCardDetails">
+                    <div className="adminMobileDetailItem">
+                      <span className="adminMobileDetailLabel">سکشن</span>
+                      <span className="adminMobileDetailValue">{student.section}</span>
+                    </div>
+                    <div className="adminMobileDetailItem">
+                      <span className="adminMobileDetailLabel">نمره کوئیز</span>
+                      <span className="adminMobileDetailValue">
+                        {student.quizGrade !== undefined ? (
+                          <span className="adminGradeBadge hasGrade">
+                            {student.quizGrade}
+                          </span>
+                        ) : (
+                          <span className="adminGradeBadge noGrade">
+                            ثبت نشده
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="adminMobileCardActions">
+                    {student.hw1File && (
+                      <button
+                        onClick={() => handleDownloadFile(student.id, 'hw1File', `${student.name}_HW1`)}
+                        disabled={downloading === `${student.id}-hw1File`}
+                        className="adminMobileActionBtn secondary"
+                      >
+                        {downloading === `${student.id}-hw1File` ? (
+                          <>
+                            <div className="adminSpinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></div>
+                            دانلود...
+                          </>
+                        ) : (
+                          '📥 HW1'
+                        )}
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => handleAddQuizGrade(student)}
+                      className="adminMobileActionBtn primary"
+                    >
+                      {student.quizGrade !== undefined ? '✏️ ویرایش' : '➕ نمره'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* مودال ثبت نمره */}
       {showQuizModal && selectedStudent && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>📝 ثبت نمره هوم ورک</h3>
+        <div className="adminModalOverlay">
+          <div className="adminModal">
+            <div className="adminModalHeader">
+              <h3>📝 ثبت نمره کوئیز</h3>
               <button 
-                className="close-btn"
+                className="adminModalCloseBtn"
                 onClick={() => setShowQuizModal(false)}
               >
                 ✕
               </button>
             </div>
             
-            <div className="student-info">
-              <div className="student-name">{selectedStudent.name}</div>
-              <div className="student-details">
+            <div className="adminStudentInfo">
+              <div className="adminStudentName">{selectedStudent.name}</div>
+              <div className="adminStudentDetails">
                 <span>شماره: {selectedStudent.studentCode}</span>
                 <span>سکشن: {selectedStudent.section}</span>
                 <span>TA: {selectedStudent.ta}</span>
               </div>
+              {selectedStudent.hw1File && (
+                <div className="adminFileInfo">
+                  <button
+                    onClick={() => handleDownloadFile(selectedStudent.id, 'hw1File', `${selectedStudent.name}_HW1`)}
+                    className="adminActionBtn download"
+                  >
+                    📥 دانلود فایل HW1
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="form-group">
-              <label>نمره هوم ورک (0-20)</label>
+            <div className="adminFormGroup">
+              <label>نمره کوئیز (0-20)</label>
               <input
                 type="number"
                 min="0"
                 max="20"
                 value={quizGrade}
                 onChange={(e) => setQuizGrade(e.target.value)}
-                className="form-input"
+                className="adminFormInput"
                 placeholder="مثال: 17"
               />
+              <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '8px' }}>
+                نمره باید بین 0 تا 20 باشد
+              </div>
             </div>
 
-            <div className="modal-actions">
+            <div className="adminModalActions">
               <button
                 onClick={submitQuizGrade}
-                disabled={!quizGrade}
-                className="submit-btn"
+                disabled={!quizGrade || parseInt(quizGrade) < 0 || parseInt(quizGrade) > 20}
+                className="adminSubmitBtn"
               >
                 ✅ ثبت نمره
               </button>
               <button
                 onClick={() => setShowQuizModal(false)}
-                className="cancel-btn"
+                className="adminCancelBtn"
               >
                 ❌ انصراف
               </button>
@@ -308,6 +536,16 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* فوتر */}
+      <footer style={{ 
+        textAlign: 'center', 
+        padding: '20px', 
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontSize: '0.9rem'
+      }}>
+        <p>سیستم مدیریت دانشجویان • نسخه ۱.۰</p>
+      </footer>
     </div>
   );
 }

@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// const Router = useRouter()
 
 export default function HomePage() {
+  const Router = useRouter()
   return (
     <div className="home-container">
       {/* اشکال شناور در پس‌زمینه */}
@@ -50,13 +50,13 @@ export default function HomePage() {
               icon: '⚡',
               title: 'سکشن اول',
               desc: 'دوشنبه ساعت 13:15 الی 15:45',
-              url : 'sec1'
+              url : 'https://portal.qepal.com/fa/upload'
             },
             {
               icon: '⚡',
               title: 'سکشن دوم',
               desc: 'دوشنبه ساعت 15:45 الی 18:30',
-              url : 'sec2'
+              url : 'https://portal.qepal.com/fa/upload'
             },
             // {
             //   icon: '🎨',
@@ -66,7 +66,7 @@ export default function HomePage() {
           ].map((feature, index) => (
             // <a href={`/${feature.url}`}>
             <div key={index} onClick={()=>{
-              // useRouter.push(`${feature.url}`)
+              Router.push(`${feature.url}`)
             }} className="feature-card glass-card">
               <span className="feature-icon">{feature.icon}</span>
               <h3 className="feature-title">{feature.title}</h3>

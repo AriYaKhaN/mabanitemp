@@ -14,6 +14,7 @@ interface Student {
   hw1File?: string;
   hw2File?: string;
   hw3File?: string;
+  hw1record?: string;
   gradedBy?: number;
   updatedAt?: string;
 }
@@ -34,6 +35,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [quizGrade, setQuizGrade] = useState('');
+  const [description, setDescription] = useState('');
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,7 +45,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const adminData = localStorage.getItem('admin');
     if (!adminData) {
-      router.push('/login');
+      router.push('/admin/login');
       return;
     }
 
@@ -106,7 +108,7 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('admin');
-    router.push('/login');
+    router.push('/admin/login');
   };
 
   const handleRefresh = () => {
@@ -116,6 +118,7 @@ export default function AdminDashboard() {
   const handleAddQuizGrade = (student: Student) => {
     setSelectedStudent(student);
     setQuizGrade(student.quizGrade?.toString() || '');
+    setDescription(student.hw1record || '');
     setShowQuizModal(true);
   };
 
@@ -137,7 +140,8 @@ export default function AdminDashboard() {
         body: JSON.stringify({
           studentId: selectedStudent.id,
           quizGrade: grade,
-          taId: admin?.taId
+          taId: admin?.taId,
+          description: description
         }),
       });
 
@@ -146,14 +150,19 @@ export default function AdminDashboard() {
       if (data.success) {
         const updatedStudents = students.map(student =>
           student.id === selectedStudent.id
-            ? { ...student, quizGrade: grade }
+            ? { 
+                ...student, 
+                quizGrade: grade,
+                hw1record: description 
+              }
             : student
         );
         setStudents(updatedStudents);
         setShowQuizModal(false);
         setSelectedStudent(null);
         setQuizGrade('');
-        alert('✅ نمره با موفقیت ثبت شد');
+        setDescription('');
+        alert('✅ نمره و توضیحات با موفقیت ثبت شد');
       } else {
         alert(data.error || 'خطا در ثبت نمره');
       }
@@ -339,7 +348,8 @@ export default function AdminDashboard() {
                     <th>شماره دانشجویی</th>
                     <th>سکشن</th>
                     <th>TA</th>
-                    <th>نمره هوم ورک</th>
+                    <th>نمره کوئیز</th>
+                    <th>توضیحات</th>
                     <th>فایل HW1</th>
                     <th>عملیات</th>
                   </tr>
@@ -360,11 +370,25 @@ export default function AdminDashboard() {
                       <td>
                         {student.quizGrade !== undefined ? (
                           <span className="adminGradeBadge hasGrade">
-                            {student.quizGrade}
+                            {student.quizGrade == -1 ? 'NS' : student.quizGrade}
                           </span>
                         ) : (
                           <span className="adminGradeBadge noGrade">
                             ثبت نشده
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        {student.hw1record ? (
+                          <div className="adminDescription">
+                            {student.hw1record.length > 30 
+                              ? `${student.hw1record.substring(0, 30)}...`
+                              : student.hw1record
+                            }
+                          </div>
+                        ) : (
+                          <span className="adminFileBadge">
+                            ندارد
                           </span>
                         )}
                       </td>
@@ -426,7 +450,7 @@ export default function AdminDashboard() {
                       <span className="adminMobileDetailValue">
                         {student.quizGrade !== undefined ? (
                           <span className="adminGradeBadge hasGrade">
-                            {student.quizGrade}
+                            {student.quizGrade== -1? 'NS' : student.quizGrade}
                           </span>
                         ) : (
                           <span className="adminGradeBadge noGrade">
@@ -436,6 +460,13 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                   </div>
+
+                  {student.hw1record && (
+                    <div className="adminMobileDescription">
+                      <span className="adminMobileDetailLabel">توضیحات:</span>
+                      <span className="adminMobileDetailValue">{student.hw1record}</span>
+                    </div>
+                  )}
 
                   <div className="adminMobileCardActions">
                     {student.hw1File && (
@@ -472,9 +503,9 @@ export default function AdminDashboard() {
       {/* مودال ثبت نمره */}
       {showQuizModal && selectedStudent && (
         <div className="adminModalOverlay">
-          <div className="adminModal">
+          <div className="adminModal" style={{ maxWidth: '600px' }}>
             <div className="adminModalHeader">
-              <h3>📝 ثبت نمره کوئیز</h3>
+              <h3>📝 ثبت نمره و توضیحات</h3>
               <button 
                 className="adminModalCloseBtn"
                 onClick={() => setShowQuizModal(false)}
@@ -518,13 +549,29 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            <div className="adminFormGroup">
+              <label>توضیحات (اختیاری)</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="adminFormInput"
+                placeholder="توضیحات درباره نمره یا عملکرد دانشجو..."
+                rows={4}
+                style={{ resize: 'vertical', minHeight: '100px' }}
+                maxLength={500}
+              />
+              <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '8px' }}>
+                {description.length}/500 کاراکتر
+              </div>
+            </div>
+
             <div className="adminModalActions">
               <button
                 onClick={submitQuizGrade}
                 disabled={!quizGrade || parseInt(quizGrade) < 0 || parseInt(quizGrade) > 20}
                 className="adminSubmitBtn"
               >
-                ✅ ثبت نمره
+                ✅ ثبت نمره و توضیحات
               </button>
               <button
                 onClick={() => setShowQuizModal(false)}

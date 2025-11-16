@@ -5,11 +5,12 @@ interface QuizGradeData {
   studentId: string;
   quizGrade: number;
   taId: number;
+  description?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { studentId, quizGrade, taId }: QuizGradeData = await request.json();
+    const { studentId, quizGrade, taId, description }: QuizGradeData = await request.json();
 
     // اعتبارسنجی
     if (!studentId || quizGrade === undefined || taId === undefined) {
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
         { 
           $set: { 
             quizGrade: quizGrade,
+            hw1record: description || '', // ذخیره توضیحات
             updatedAt: new Date(),
             gradedBy: taId
           } 
@@ -79,7 +81,8 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'نمره با موفقیت ثبت شد',
         studentId: studentId,
-        quizGrade: quizGrade
+        quizGrade: quizGrade,
+        description: description
       });
 
     } catch (dbError: any) {

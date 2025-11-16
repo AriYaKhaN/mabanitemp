@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
       const students = await studentsCollection.find(query).toArray();
 
-      // تبدیل به فرمت مورد نیاز کامپوننت
+      // تبدیل به فرمت مورد نیاز کامپوننت - شامل فیلد hw1record
       const formattedStudents = students.map(student => ({
         id: student._id.toString(),
         name: student.name,
@@ -39,12 +39,13 @@ export async function GET(request: NextRequest) {
         section: student.section,
         ta: student.ta,
         createdAt: student.createdAt,
-        quizGrade: student.quizGrade, // اضافه کردن فیلد quizGrade
-        hw1File: student.hw1File,     // اضافه کردن فیلد hw1File
-        hw2File: student.hw2File,     // اضافه کردن فیلد hw2File
-        hw3File: student.hw3File,     // اضافه کردن فیلد hw3File
-        gradedBy: student.gradedBy,   // اضافه کردن فیلد gradedBy
-        updatedAt: student.updatedAt  // اضافه کردن فیلد updatedAt
+        quizGrade: student.quizGrade,
+        hw1File: student.hw1File,
+        hw2File: student.hw2File,
+        hw3File: student.hw3File,
+        hw1record: student.hw1record, // اضافه کردن این فیلد
+        gradedBy: student.gradedBy,
+        updatedAt: student.updatedAt
       }));
 
       return NextResponse.json({
